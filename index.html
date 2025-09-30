@@ -232,6 +232,9 @@ answerInput.addEventListener('keydown', function(e) {
   if (e.key === 'Enter') {
     e.preventDefault();
     checkAnswer();
+    if(feedback.textContent === '正解！'){
+      nextQuestion();
+    }
   }
 });
 
