@@ -1,1 +1,243 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8" />
+<title>過去形</title>
+</head>
+<body>
 
+<div id="quiz">
+
+  <div id="status" style="margin-bottom:10px;">
+    <span id="week"></span>
+    <span id="progress" style="margin-left:20px;"></span>
+  </div>
+
+  <p id="question">読み込み中...</p>
+
+  <label for="answer"></label>
+  <input id="answer" type="text" autocomplete="off" />
+  <button id="checkBtn">判定</button>
+
+  <p id="feedback" aria-live="polite"></p>
+
+  <div id="controls" style="margin-top:10px;">
+    <button id="nextBtn">次へ</button>
+  </div>
+</div>
+
+<style>
+  body{text-align: center;
+      font-family: "Arial"}
+  p,label{
+    font-size: 40px;
+    font-weight: bold;
+  }
+  #status span {
+    font-size: 28px;
+    color: #777;
+  }
+  input{
+    width: 400px;
+    height: 110px;
+    margin: 5px;
+    font-size: 48px;
+    text-align: center;
+    border: 4px solid #333;
+    border-radius: 24px;
+    background-color: #ffffff;
+  }
+  button{
+    width: 200px;
+    height: 120px;
+    margin: 5px;
+    font-size: 48px;
+    text-align: center;
+    border: 4px solid #333;
+    border-radius: 12px;
+    background-color: #fff6c5;
+    cursor: pointer;
+    transition:transform 0.1s;
+  }
+  button:active {
+    transform: scale(0.9);
+  }
+</style>
+
+<script>
+const questions =  [ 
+  { q: "costの過去分詞は？", a: ["cost"] },
+  { q: "cutの過去分詞は？", a: ["cut"] },
+  { q: "hitの過去分詞は？", a: ["hit"] },
+  { q: "hurt(傷つける)の過去分詞は？", a: ["hurt"] },
+  { q: "let(させてあげる)の過去分詞は？", a: ["let"] },
+  { q: "putの過去分詞は？", a: ["put"] },
+  { q: "readの過去分詞は？", a: ["read"] },
+  { q: "setの過去分詞は？", a: ["set"] },
+  { q: "spread(広げる)の過去分詞は？", a: ["spread"] },
+  { q: "beat(打ち負かす)の過去分詞は？", a: ["beaten","beat"] },
+  { q: "becomeの過去分詞は？", a: ["become"] },
+  { q: "comeの過去分詞は？", a: ["come"] },
+  { q: "overcome(克服する)の過去分詞は？", a: ["overcome"] },
+  { q: "runの過去分詞は？", a: ["run"] },
+  { q: "bringの過去分詞は？", a: ["brought"] },
+  { q: "buildの過去分詞は？", a: ["built"] },
+  { q: "burnの過去分詞は？", a: ["burned","burnt"] },
+  { q: "buyの過去分詞は？", a: ["bought"] },
+  { q: "catchの過去分詞は？", a: ["caught"] },
+  { q: "digの過去分詞は？", a: ["dug"] },
+  { q: "feelの過去分詞は？", a: ["felt"] },
+  { q: "fightの過去分詞は？", a: ["fought"] },
+  { q: "findの過去分詞は？", a: ["found"] },
+  { q: "forgetの過去分詞は？", a: ["forgotten","forgot"] },
+  { q: "getの過去分詞は？", a: ["gotten","got"] },
+  { q: "hang(つるす)の過去分詞は？", a: ["hung"] },
+  { q: "haveの過去分詞は？", a: ["had"] },
+  { q: "hearの過去分詞は？", a: ["heard"] },
+  { q: "holdの過去分詞は？", a: ["held"] },
+  { q: "keepの過去分詞は？", a: ["kept"] },
+  { q: "leadの過去分詞は？", a: ["led"] },
+  { q: "learnの過去分詞は？", a: ["learnt", "learned"] },
+  { q: "leaveの過去分詞は？", a: ["left"] },
+  { q: "lendの過去分詞は？", a: ["lent"] },
+  { q: "loseの過去分詞は？", a: ["lost"] },
+  { q: "makeの過去分詞は？", a: ["made"] },
+  { q: "meanの過去分詞は？", a: ["meant"] },
+  { q: "meetの過去分詞は？", a: ["met"] },
+  { q: "misunderstandの過去分詞は？", a: ["misunderstood"] },
+  { q: "payの過去分詞は？", a: ["paid"] },
+  { q: "sayの過去分詞は？", a: ["said"] },
+  { q: "sellの過去分詞は？", a: ["sold"] },
+  { q: "sendの過去分詞は？", a: ["sent"] },
+  { q: "shootの過去分詞は？", a: ["shot"] },
+  { q: "sitの過去分詞は？", a: ["sat"] },
+  { q: "sleepの過去分詞は？", a: ["slept"] },
+  { q: "smellの過去分詞は？", a: ["smelt","smelled"] },
+  { q: "spendの過去分詞は？", a: ["spent"] },
+  { q: "standの過去分詞は？", a: ["stood"] },
+  { q: "swingの過去分詞は？", a: ["swung"] },
+  { q: "teachの過去分詞は？", a: ["taught"] },
+  { q: "tellの過去分詞は？", a: ["told"] },
+  { q: "thinkの過去分詞は？", a: ["thought"] },
+  { q: "understandの過去分詞は？", a: ["understood"] },
+  { q: "winの過去分詞は？", a: ["won"] },
+  { q: "beの過去分詞は？", a: ["been"] },
+  { q: "bear(生まれる)の過去分詞は？", a: ["born","borne"] },
+  { q: "beginの過去分詞は？", a: ["begun"] },
+  { q: "bite（噛む）の過去分詞は？", a: ["bitten"] },
+  { q: "blowの過去分詞は？", a: ["blown"] },
+  { q: "breakの過去分詞は？", a: ["broken"] },
+  { q: "chooseの過去分詞は？", a: ["chosen"] },
+  { q: "doの過去分詞は？", a: ["done"] },
+  { q: "drawの過去分詞は？", a: ["drawn"] },
+  { q: "drinkの過去分詞は？", a: ["drunk"] },
+  { q: "driveの過去分詞は？", a: ["driven"] },
+  { q: "eatの過去分詞は？", a: ["eaten"] },
+  { q: "fallの過去分詞は？", a: ["fallen"] },
+  { q: "flyの過去分詞は？", a: ["flown"] },
+  { q: "giveの過去分詞は？", a: ["given"] },
+  { q: "goの過去分詞は？", a: ["gone"] },
+  { q: "growの過去分詞は？", a: ["grown"] },
+  { q: "hideの過去分詞は？", a: ["hidden"] },
+  { q: "knowの過去分詞は？", a: ["known"] },
+  { q: "lie（横になる）の過去分詞は？", a: ["lain"] },
+  { q: "mistakeの過去分詞は？", a: ["mistaken"] },
+  { q: "rideの過去分詞は？", a: ["ridden"] },
+  { q: "ringの過去分詞は？", a: ["rung"] },
+  { q: "riseの過去分詞は？", a: ["risen"] },
+  { q: "seeの過去分詞は？", a: ["seen"] },
+  { q: "shakeの過去分詞は？", a: ["shaken"] },
+  { q: "showの過去分詞は？", a: ["shown","showed"] },
+  { q: "singの過去分詞は？", a: ["sung"] },
+  { q: "speakの過去分詞は？", a: ["spoken"] },
+  { q: "steal（盗む）の過去分詞は？", a: ["stolen"] },
+  { q: "swimの過去分詞は？", a: ["swum"] },
+  { q: "takeの過去分詞は？", a: ["taken"] },
+  { q: "throwの過去分詞は？", a: ["thrown"] },
+  { q: "wakeの過去分詞は？", a: ["woken"] },
+  { q: "wearの過去分詞は？", a: ["worn"] },
+  { q: "writeの過去分詞は？", a: ["written"] }
+];
+
+const questionEl = document.getElementById('question');
+const progressEl = document.getElementById('progress');
+const weekEl = document.getElementById('week');
+const answerInput = document.getElementById('answer');
+const checkBtn = document.getElementById('checkBtn');
+const feedback = document.getElementById('feedback');
+const nextBtn = document.getElementById('nextBtn');
+
+let idx = 0;
+let week = 1; // 今週目
+let quizOrder = [];
+
+// 配列シャッフル（Fisher-Yates）
+function shuffle(array) {
+  let arr = array.slice();
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+// 入力正規化
+function normalize(str) {
+  return str
+    .replace(/\u3000/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .toLowerCase();
+}
+
+// 問題表示
+function loadQuestion(i) {
+  const item = questions[quizOrder[i]];
+  questionEl.textContent = item ? item.q : "エラー!";
+  progressEl.textContent = `${i + 1}問目 / 全${questions.length}問`;
+  weekEl.textContent = `${week}週目`;
+  answerInput.value = "";
+  feedback.textContent = "";
+  answerInput.focus();
+}
+
+// 判定
+function checkAnswer() {
+  const user = normalize(answerInput.value);
+  const item = questions[quizOrder[idx]];
+  if (!item) return;
+  const normalizedCorrect = item.a.map(a => normalize(a));
+  if (normalizedCorrect.includes(user) && user !== "") {
+    feedback.textContent = "正解！";
+  } else {
+    feedback.textContent = "不正解 - 答えは " + item.a.join(', ');
+  }
+}
+
+
+function nextQuestion() {
+  idx++;
+  if (idx >= questions.length) {
+    quizOrder = shuffle([...Array(questions.length).keys()]);
+    idx = 0;
+    week++; 
+  }
+  loadQuestion(idx);
+}
+
+
+checkBtn.addEventListener('click', checkAnswer);
+nextBtn.addEventListener('click', nextQuestion);
+answerInput.addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') {
+    e.preventDefault();
+    checkAnswer();
+  }
+});
+
+// 初期化
+quizOrder = shuffle([...Array(questions.length).keys()]);
+loadQuestion(idx);
+</script>
+</body>
+</html>
